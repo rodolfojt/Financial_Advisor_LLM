@@ -7,10 +7,10 @@ from qdrant_client.http.api_client import UnexpectedResponse
 from qdrant_client.http.models import Distance, VectorParams
 from qdrant_client.models import PointStruct
 
-from streamin_pipeline import constants
+from streaming_pipeline import constants
 from streaming_pipeline.models import Document
 
-class QdrantVectorOutput(DynamicOuput):
+class QdrantVectorOutput(DynamicOutput):
     """
     A class representing a Qdrant vector output.
 
@@ -44,7 +44,7 @@ class QdrantVectorOutput(DynamicOuput):
             self.client.recreate_collection(
                 collection_name=self._collection_name,
                 vectors_config=VectorParams(
-                    size=self._vectorsize, distance=Distance.COSINE
+                    size=self._vector_size, distance=Distance.COSINE
                 ),
             )
     

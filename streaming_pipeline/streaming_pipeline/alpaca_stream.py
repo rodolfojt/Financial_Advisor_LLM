@@ -36,14 +36,14 @@ class AlpacaNewsStreamInput(DynamicInput):
             class with the worker's allocated tickers.
         """
 
-        prods_per_worker = int(len(self._tickers) / workers_count)
+        prods_per_worker = int(len(self._tickers) / worker_count)
         worker_tickers = self._tickers[
             int(worker_index * prods_per_worker) : int(
                 worker_index * prods_per_worker + prods_per_worker
             )
         ]
 
-        return ALpacaNewsStreamSource(tickers=worker_tickers)
+        return AlpacaNewsStreamSource(tickers=worker_tickers)
 
 class AlpacaNewsStreamSource(StatelessSource):
     """
@@ -169,7 +169,7 @@ class AlpacaNewsStreamClient:
         self._connect()
         self._auth()
 
-    def _connect():
+    def _connect(self):
         """
         Connects to the Alpaca News Stream.
         """
