@@ -120,7 +120,7 @@ def build_alpaca_client(
         
     if api_secret is None:
         try:
-            api_key = os.environ["ALPACA_API_SECRET"]
+            api_secret = os.environ["ALPACA_API_SECRET"]
         except KeyError:
             raise KeyError(
                 "ALPACA_API_SECRET must be set as environment variable or manually passed as an argument."
@@ -206,71 +206,71 @@ class AlpacaNewsStreamClient:
         else:
             logger.info("[AlpacaNewsStream]: Authenticated with Alpaca News Stream.")
 
-        def subscribe(self):
-            """
-            Subscribes to the Alpaca News Stream.
-            """
+    def subscribe(self):
+        """
+        Subscribes to the Alpaca News Stream.
+        """
 
-            self._ws.send(
-                self._build_message({"action": "subscribe", "news": self._tickers})
-            )
+        self._ws.send(
+            self._build_message({"action": "subscribe", "news": self._tickers})
+        )
 
-            msg = self.recv()
-            if msg[0]["T"] != "subscription":
-                raise ValueError("failed to subscribe")
-            else:
-                logger.info("[AlpacaNewsStream]: Subscribe to Alpaca News Stream.")
-        
-        def unsubscribe(self):
-            """
-            Unsubscribes from the Alpaca News Stream.
-            """
+        msg = self.recv()
+        if msg[0]["T"] != "subscription":
+            raise ValueError("failed to subscribe")
+        else:
+            logger.info("[AlpacaNewsStream]: Subscribed to Alpaca News Stream.")
+    
+    def unsubscribe(self):
+        """
+        Unsubscribes from the Alpaca News Stream.
+        """
 
-            self._ws.send(
-                self._build_message({"action": "unsubscribe", "news": self._tickers})
-            )
+        self._ws.send(
+            self._build_message({"action": "unsubscribe", "news": self._tickers})
+        )
 
-            msg = self.recv()
-            if msg[0]["T"] != "subscription":
-                raise ValueError("failed to unsubscribe")
-            else:
-                logger.info("[AlpacaNewsStream]: Unsubscribed from Alpaca News Stream.")
-        
-        def _build_message(self, message: dict) -> str:
-            """
-            Builds a message to send to the Alpaca News Stream.
+        msg = self.recv()
+        if msg[0]["T"] != "subscription":
+            raise ValueError("failed to unsubscribe")
+        else:
+            logger.info("[AlpacaNewsStream]: Unsubscribed from Alpaca News Stream.")
+    
+    def _build_message(self, message: dict) -> str:
+        """
+        Builds a message to send to the Alpaca News Stream.
 
-            Args:
-                message (dict): the message to build.
+        Args:
+            message (dict): the message to build.
 
-            Returns:
-                str: The built message.
-            """
+        Returns:
+            str: The built message.
+        """
 
-            return json.dumps(message)
-        
-        def recv(self) -> Union[dict, List[dict]]:
-            """
-            Receives a message from the Alpaca News Stream.
+        return json.dumps(message)
+    
+    def recv(self) -> Union[dict, List[dict]]:
+        """
+        Receives a message from the Alpaca News Stream.
 
-            Returns:
-                Union[dict, List[dict]]: The received message.
-            """
+        Returns:
+            Union[dict, List[dict]]: The received message.
+        """
 
-            if self._ws:
-                message = self._ws.recv()
-                logger.info(f"[AlpacaNewsStream]: Received message: {message}")
-                message = json.loads(message)
+        if self._ws:
+            message = self._ws.recv()
+            logger.info(f"[AlpacaNewsStream]: Received message: {message}")
+            message = json.loads(message)
 
-                return message
-            else:
-                raise RuntimeError("Websocket not initialized. Call start() first.")
+            return message
+        else:
+            raise RuntimeError("Websocket not initialized. Call start() first.")
 
-        def close(self) -> None:
-            """
-            Closes the Alpaca News Stream connection.
-            """
+    def close(self) -> None:
+        """
+        Closes the Alpaca News Stream connection.
+        """
 
-            if self._ws:
-                self._ws.close()
-                self._ws = None
+        if self._ws:
+            self._ws.close()
+            self._ws = None
