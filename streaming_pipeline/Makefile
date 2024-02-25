@@ -34,7 +34,7 @@ run_real_time_dev:
 	RUST_BACKTRACE=full poetry run python -m bytewax.run "tools.run_real_time:build_flow(debug=True)"
 
 run_batch:
-	RUST_BACKTRACE=full poetry run python -m bytewax.run -p4 "tools.run_batch:build_flow(latest_n_days=8)"
+	RUST_BACKTRACE=full poetry run python -m bytewax.run "tools.run_batch:build_flow(latest_n_days=8)"
 
 run_batch_dev:
 	RUST_BACKTRACE=full poetry run python -m bytewax.run "tools.run_batch:build_flow(latest_n_days=2, debug=True)"

@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class EmbeddingModelSingleton(metaclass=SingletonMeta):
     """
-    A singleton class that provides a pre-trained transformer model for generating embedings of input text.
+    A singleton class that provides a pre-trained transformer model for generating embeddings of input text.
 
     Args:
         model_id (str): The identifier of the pre-trained transformer model to use.
@@ -25,7 +25,7 @@ class EmbeddingModelSingleton(metaclass=SingletonMeta):
 
     Attributes:
         max_input_length (int): The maximum length of input text to tokenize.
-        tokenizer (AutoTokenizer): The tokenizer used to tokenike input text.
+        tokenizer (AutoTokenizer): The tokenizer used to tokenize input text.
     """
 
     def __init__(
@@ -39,8 +39,8 @@ class EmbeddingModelSingleton(metaclass=SingletonMeta):
         Initializes the EmbeddingModelSingleton instance.
 
         Args:
-            model_id (str): The identifier of the pre-treined transformer model to use.
-            max_input_length (int): The maximum length of the input text to tokenize.
+            model_id (str): The identifier of the pre-trained transformer model to use.
+            max_input_length (int): The maximum length of input text to tokenize.
             device (str): The device to use for running the model (e.g. "cpu", "cuda").
             cache_dir (Optional[Path]): The directory to cache the pre-trained model files.
                 If None, the default cache directory is used.
@@ -69,12 +69,12 @@ class EmbeddingModelSingleton(metaclass=SingletonMeta):
         return self._max_input_length
 
     @property
-    def tokenize(self) -> AutoTokenizer:
+    def tokenizer(self) -> AutoTokenizer:
         """
         Returns the tokenizer used to tokenize input text.
 
         Returns:
-            AutoTokenizer: The tokenizer user to tokenize input text.
+            AutoTokenizer: The tokenizer used to tokenize input text.
         """
 
         return self._tokenizer
@@ -87,7 +87,7 @@ class EmbeddingModelSingleton(metaclass=SingletonMeta):
 
         Args:
             input_text (str): The input text to generate embeddings for.
-            to_list (bool): Whether to return the embedding as a list or numpy array. Defaults to True.
+            to_list (bool): Whether to return the embeddings as a list or numpy array. Defaults to True.
 
         Returns:
             Union[np.ndarray, list]: The embeddings generated for the input text.
@@ -100,10 +100,10 @@ class EmbeddingModelSingleton(metaclass=SingletonMeta):
                 truncation=True,
                 return_tensors="pt",
                 max_length=self._max_input_length,
-            ).to_(self._device)
+            ).to(self._device)
         except Exception:
             logger.error(traceback.format_exc())
-            logger.error(f"Error tokening the following input text: {input_text}")
+            logger.error(f"Error tokenizing the following input text: {input_text}")
             
             return [] if to_list else np.array([])
         
@@ -112,8 +112,9 @@ class EmbeddingModelSingleton(metaclass=SingletonMeta):
         except Exception:
             logger.error(traceback.format_exc())
             logger.error(
-                f"Error generating embeddings for the following model_id: {self._model_id} and input_text: {input_text}"
+                f"Error generating embeddings for the following model_id: {self._model_id} and input text: {input_text}"
             )
+            
             return [] if to_list else np.array([])
 
         embeddings = result.last_hidden_state[:, 0, :].cpu().detach().numpy()

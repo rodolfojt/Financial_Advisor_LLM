@@ -13,16 +13,17 @@ from unstructured.staging.huggingface import chunk_by_attention_window
 
 from streaming_pipeline.embeddings import EmbeddingModelSingleton
 
+
 class NewsArticle(BaseModel):
     """
     Represents a news article.
 
-    Attibutes:
+    Attributes:
         id (int): News article ID
-        headline (str): Headline or title the article
+        headline (str): Headline or title of the article
         summary (str): Summary text for the article (may be first sentence of content)
         author (str): Original author of news article
-        created_at (datetime): Data article was created (RFC 3339)
+        created_at (datetime): Date article was created (RFC 3339)
         updated_at (datetime): Date article was updated (RFC 3339)
         url (Optional[str]): URL of article (if applicable)
         content (str): Content of the news article (might contain HTML)
@@ -31,7 +32,7 @@ class NewsArticle(BaseModel):
     """
 
     id: int
-    headLine: str
+    headline: str
     summary: str
     author: str
     created_at: datetime
@@ -44,6 +45,7 @@ class NewsArticle(BaseModel):
     def to_document(self) -> "Document":
         """
         Converts the news article to a Document object.
+
         Returns:
             Document: A Document object representing the news article.
         """
@@ -55,7 +57,7 @@ class NewsArticle(BaseModel):
         cleaned_content = clean_non_ascii_chars(
             replace_unicode_quotes(clean(" ".join([str(x) for x in article_elements])))
         )
-        cleaned_headline = clena_non_ascii_chars(
+        cleaned_headline = clean_non_ascii_chars(
             replace_unicode_quotes(clean(self.headline))
         )
         cleaned_summary = clean_non_ascii_chars(
@@ -72,17 +74,18 @@ class NewsArticle(BaseModel):
 
         return document
 
+
 class Document(BaseModel):
     """
     A Pydantic model representing a document.
 
-    Attibutes:
+    Attributes:
         id (str): The ID of the document.
         group_key (Optional[str]): The group key of the document.
         metadata (dict): The metadata of the document.
         text (list): The text of the document.
         chunks (list): The chunks of the document.
-        embeddings (list): The embeddings of the documents.
+        embeddings (list): The embeddings of the document.
 
     Methods:
         to_payloads: Returns the payloads of the document.
@@ -93,7 +96,7 @@ class Document(BaseModel):
     id: str
     group_key: Optional[str] = None
     metadata: dict = {}
-    text: list = {}
+    text: list = []
     chunks: list = []
     embeddings: list = []
 
@@ -110,7 +113,7 @@ class Document(BaseModel):
         for chunk in self.chunks:
             payload = self.metadata
             payload.update({"text": chunk})
-            # Create the chunk ID using the hash of the chunk to avoid storing duplicates
+            # Create the chunk ID using the hash of the chunk to avoid storing duplicates.
             chunk_id = hashlib.md5(chunk.encode()).hexdigest()
 
             payloads.append(payload)
@@ -126,7 +129,7 @@ class Document(BaseModel):
             model (EmbeddingModelSingleton): The embedding model to use for computing the chunks.
 
         Returns:
-            Document: the document object with the computed chunks.
+            Document: The document object with the computed chunks.
         """
 
         for item in self.text:

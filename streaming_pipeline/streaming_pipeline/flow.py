@@ -16,6 +16,7 @@ from streaming_pipeline.embeddings import EmbeddingModelSingleton
 from streaming_pipeline.models import NewsArticle
 from streaming_pipeline.qdrant import QdrantVectorOutput
 
+
 def build(
     is_batch: bool = False,
     from_datetime: Optional[datetime.datetime] = None,
@@ -34,7 +35,7 @@ def build(
         debug (bool): Whether to enable debug mode.
 
     Returns:
-        Dataflow: the dataflow pipeline for processing news articles.
+        Dataflow: The dataflow pipeline for processing news articles.
     """
 
     model = EmbeddingModelSingleton(cache_dir=model_cache_dir)
@@ -49,7 +50,7 @@ def build(
     )
     flow.flat_map(lambda messages: parse_obj_as(List[NewsArticle], messages))
     if debug:
-        flow.inpect(print)
+        flow.inspect(print)
     flow.map(lambda article: article.to_document())
     flow.map(lambda document: document.compute_chunks(model))
     flow.map(lambda document: document.compute_embeddings(model))
@@ -77,6 +78,7 @@ def _build_input(
         )
     else:
         return AlpacaNewsStreamInput(tickers=["*"])
+
 
 def _build_output(model: EmbeddingModelSingleton, in_memory: bool = False) -> Output:
     if in_memory:

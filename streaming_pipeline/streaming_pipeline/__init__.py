@@ -47,7 +47,7 @@ def initialize_logger(
     with open(config_path, "rt") as f:
         config = yaml.safe_load(f.read())
 
-    # Make sure that existing logger will still work
+    # Make sure that existing logger will still work.
     config["disable_existing_loggers"] = False
 
     logging.config.dictConfig(config)

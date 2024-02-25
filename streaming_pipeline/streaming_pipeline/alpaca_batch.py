@@ -32,8 +32,10 @@ class AlpacaNewsBatchInput(DynamicInput):
         self._to_datetime = to_datetime
 
     def build(self, worker_index, worker_count):
-        # Distribute different time ranges to different workers
-        # based on the total number of workers
+        """ 
+        Distribute different time ranges to different workers
+        based on the total number of workers.
+        """
 
         datetime_intervals = utils.split_time_range_into_intervals(
             from_datetime=self._from_datetime,
@@ -47,7 +49,7 @@ class AlpacaNewsBatchInput(DynamicInput):
             f"woker_index: {worker_index} start from {worker_from_datetime} to {worker_to_datetime}"
         )
 
-        return AlpacaNewsBatchInput(
+        return AlpacaNewsBatchSource(
             tickers=self._tickers, 
             from_datetime=worker_from_datetime, 
             to_datetime=worker_to_datetime,
@@ -58,7 +60,7 @@ class AlpacaNewsBatchSource(StatelessSource):
     A batch source for retrieving news articles from Alpaca.
 
     Args:
-        tickers (List[str]): A list of tickers symbols to retrieve news for.
+        tickers (List[str]): A list of ticker symbols to retrieve news for.
         from_datetime (datetime.datetime): The start datetime to retrieve news from.
         to_datetime (datetime.datetime): The end datetime to retrieve news from.
     """
@@ -67,7 +69,7 @@ class AlpacaNewsBatchSource(StatelessSource):
         self,
         tickers: List[str],
         from_datetime: datetime.datetime,
-        to_datetime: datetime.datetime
+        to_datetime: datetime.datetime,
     ):
         self._alpaca_client = build_alpaca_client(
             from_datetime=from_datetime, to_datetime=to_datetime, tickers=tickers
@@ -89,7 +91,7 @@ class AlpacaNewsBatchSource(StatelessSource):
     
     def close(self):
         """
-        Closes the batch source
+        Closes the batch source.
         """
         
         pass
@@ -112,7 +114,7 @@ def build_alpaca_client(
         tickers (Optional[List[str]], optional): The list of tickers to retrieve news for. Defaults to None.
 
     Raises:
-        KeyError: if api_key or api_secret is not provided and is not found in the environment variables.
+        KeyError: If api_key or api_secret is not provided and is not found in the environment variables.
     
     Returns:
         AlpacaNewsBatchClient: The AlpacaNewsBatchClient object.
@@ -148,7 +150,7 @@ def build_alpaca_client(
 
 class AlpacaNewsBatchClient:
     """
-    Alpaca News API Client that uses a RESTfull API to fetch news data.
+    Alpaca News API Client that uses a RESTful API to fetch news data.
 
     Attributes:
         NEWS_URL (str): The URL for the Alpaca News API.
@@ -157,7 +159,7 @@ class AlpacaNewsBatchClient:
         _api_key (str): The API key for the Alpaca News API.
         _api_secret (str): The API secret for the Alpaca News API.
         _tickers (List[str]): A list of tickers to filter the news data.
-        _page_token (str): The page token for the next page news data.
+        _page_token (str): The page token for the next page of news data.
         _first_request (bool): A flag indicating whether this is the first request for news data.
     """
 
@@ -175,8 +177,8 @@ class AlpacaNewsBatchClient:
         Initializes a new instance of the AlpacaNewsBatchClient class.
 
         Args:
-            from_datetime (datetime.datetime): The start datetim for the news data.
-            to_datetime (datetime.datetime): THe end datetime for the news data.
+            from_datetime (datetime.datetime): The start datetime for the news data.
+            to_datetime (datetime.datetime): The end datetime for the news data.
             api_key (str): The API key for the Alpaca News API.
             api_secret (str): The API secret for the Alpaca News API.
             tickers (List[str]): A list of tickers to filter the news data.
@@ -189,8 +191,7 @@ class AlpacaNewsBatchClient:
         self._tickers = tickers
 
         self._page_token = None
-        self._first_request = None
-
+        self._first_request = True
 
     @property
     def try_request(self) -> bool:
@@ -224,7 +225,6 @@ class AlpacaNewsBatchClient:
 
         # Look at all the parameters here: https://alpaca.markets/docs/api-references/market-data-api/news-data/historical/
         # or here: https://github.com/alpacahq/alpaca-py/blob/master/alpaca/data/requests.py#L357
-
         params = {
             "start": self._from_datetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "end": self._to_datetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -239,7 +239,7 @@ class AlpacaNewsBatchClient:
 
         # parse output
         next_page_token = None
-        if response.status_code == 200:
+        if response.status_code == 200:  # Check if the request was successful
             # parse response into json
             news_json = response.json()
 
@@ -247,7 +247,7 @@ class AlpacaNewsBatchClient:
             next_page_token = news_json.get("next_page_token", None)
 
         else:
-            logger.error("Request failed with status code:". response.status_code)
+            logger.error("Request failed with status code:", response.status_code)
         
         self._page_token = next_page_token
 
