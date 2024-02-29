@@ -1,6 +1,6 @@
 name: Continuous Integration (CI) | Streaming Pipeline
 
-on: [push]
+#on: [push]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
