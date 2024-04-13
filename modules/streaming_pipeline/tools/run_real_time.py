@@ -1,6 +1,7 @@
 from streaming_pipeline import initialize
 from streaming_pipeline.flow import build as flow_builder
 
+
 def build_flow(
     env_file_path: str = ".env",
     logging_config_path: str = "logging.yaml",
@@ -13,7 +14,7 @@ def build_flow(
     Args:
         env_file_path (str, optional): Path to the environment file. Defaults to ".env".
         logging_config_path (str, optional): Path to the logging configuration file. Defaults to "logging.yaml".
-        model_cache_dir (str, optional): Path to the directory where the model cache is stored. Defaults is None.
+        model_cache_dir (str, optional): Path to the directory where the model cache is stored. Defaults to None.
         debug (bool, optional): Whether to run the flow in debug mode. Defaults to False.
 
     Returns:

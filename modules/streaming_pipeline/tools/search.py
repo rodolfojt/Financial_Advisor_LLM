@@ -34,7 +34,7 @@ def search(query_string: str):
     )
     for hit in hits:
         logger.info(hit)
-    
+
 
 if __name__ == "__main__":
-    Fire(search) 
+    Fire(search)
