@@ -20,10 +20,10 @@ class AlpacaNewsStreamInput(DynamicInput):
 
     def __init__(self, tickers):
         self._tickers = tickers
-    
+
     def build(self, worker_index, worker_count):
         """
-        Distributes the tickers to the workers. If parallelized
+        Distributes the tickers to the workers. If parallelized,
         workers will establish their own websocket connection and
         subscribe to the tickers they are allocated.
 
@@ -48,7 +48,7 @@ class AlpacaNewsStreamInput(DynamicInput):
 class AlpacaNewsStreamSource(StatelessSource):
     """
     A source for streaming news data from Alpaca API.
-    
+
     Args:
         tickers (List[str]): A list of ticker symbols to subscribe to.
 
@@ -63,7 +63,6 @@ class AlpacaNewsStreamSource(StatelessSource):
         Args:
             tickers (List[str]): A list of ticker symbols to subscribe to.
         """
-
         self._alpaca_client = build_alpaca_client(tickers=tickers)
         self._alpaca_client.start()
         self._alpaca_client.subscribe()
@@ -75,9 +74,8 @@ class AlpacaNewsStreamSource(StatelessSource):
         Returns:
             dict: A dictionary containing the news item data.
         """
-
         return self._alpaca_client.recv()
-    
+
     def close(self):
         """
         Unsubscribes from the Alpaca API and closes the connection.
@@ -91,7 +89,7 @@ class AlpacaNewsStreamSource(StatelessSource):
 
 def build_alpaca_client(
     api_key: Optional[str] = None,
-    api_secret: Optional[str] = None, 
+    api_secret: Optional[str] = None,
     tickers: Optional[List[str]] = None,
 ) -> "AlpacaNewsStreamClient":
     """
@@ -103,7 +101,7 @@ def build_alpaca_client(
             it will be retrieved from the environment variable "ALPACA_API_KEY".
         api_secret (Optional[str]): The Alpaca API secret. If not provided,
             it will be retrieved from the environment variable "ALPACA_API_SECRET".
-        ticker (Optional[List[str]]): A list of tickers to subscribe to.
+        tickers (Optional[List[str]]): A list of tickers to subscribe to.
             If not provided, it will subscribe to all tickers.
 
     Returns:
@@ -117,7 +115,7 @@ def build_alpaca_client(
             raise KeyError(
                 "ALPACA_API_KEY must be set as environment variable or manually passed as an argument."
             )
-        
+
     if api_secret is None:
         try:
             api_secret = os.environ["ALPACA_API_SECRET"]
@@ -125,10 +123,10 @@ def build_alpaca_client(
             raise KeyError(
                 "ALPACA_API_SECRET must be set as environment variable or manually passed as an argument."
             )
-    
+
     if tickers is None:
         tickers = ["*"]
-    
+
     return AlpacaNewsStreamClient(
         api_key=api_key, api_secret=api_secret, tickers=tickers
     )
@@ -220,8 +218,8 @@ class AlpacaNewsStreamClient:
             raise ValueError("failed to subscribe")
         else:
             logger.info("[AlpacaNewsStream]: Subscribed to Alpaca News Stream.")
-    
-    def unsubscribe(self):
+
+    def ubsubscribe(self):
         """
         Unsubscribes from the Alpaca News Stream.
         """
@@ -235,20 +233,20 @@ class AlpacaNewsStreamClient:
             raise ValueError("failed to unsubscribe")
         else:
             logger.info("[AlpacaNewsStream]: Unsubscribed from Alpaca News Stream.")
-    
+
     def _build_message(self, message: dict) -> str:
         """
         Builds a message to send to the Alpaca News Stream.
 
         Args:
-            message (dict): the message to build.
+            message (dict): The message to build.
 
         Returns:
             str: The built message.
         """
 
         return json.dumps(message)
-    
+
     def recv(self) -> Union[dict, List[dict]]:
         """
         Receives a message from the Alpaca News Stream.

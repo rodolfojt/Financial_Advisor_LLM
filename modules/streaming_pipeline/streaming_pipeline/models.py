@@ -118,7 +118,7 @@ class Document(BaseModel):
 
             payloads.append(payload)
             ids.append(chunk_id)
-        
+
         return ids, payloads
 
     def compute_chunks(self, model: EmbeddingModelSingleton) -> "Document":
@@ -134,27 +134,27 @@ class Document(BaseModel):
 
         for item in self.text:
             chunked_item = chunk_by_attention_window(
-                    item, model.tokenizer, max_input_size=model.max_input_length
+                item, model.tokenizer, max_input_size=model.max_input_length
             )
-        
+
             self.chunks.extend(chunked_item)
 
         return self
-    
+
     def compute_embeddings(self, model: EmbeddingModelSingleton) -> "Document":
         """
         Computes the embeddings for each chunk in the document using the specified embedding model.
 
         Args:
             model (EmbeddingModelSingleton): The embedding model to use for computing the embeddings.
-        
+
         Returns:
             Document: The document object with the computed embeddings.
         """
 
         for chunk in self.chunks:
             embedding = model(chunk, to_list=True)
-            
+
             self.embeddings.append(embedding)
 
         return self

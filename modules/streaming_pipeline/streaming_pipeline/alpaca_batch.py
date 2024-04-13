@@ -17,7 +17,7 @@ class AlpacaNewsBatchInput(DynamicInput):
 
     Args:
         tickers: list - should be a list of tickers, use "*" for all
-        from_datetime: datetime.datetime - the start datetim for the news data
+        from_datetime: datetime.datetime - the start datetime for the news data
         to_datetime: datetime.datetime - the end datetime for the news data
     """
 
@@ -50,8 +50,8 @@ class AlpacaNewsBatchInput(DynamicInput):
         )
 
         return AlpacaNewsBatchSource(
-            tickers=self._tickers, 
-            from_datetime=worker_from_datetime, 
+            tickers=self._tickers,
+            from_datetime=worker_from_datetime,
             to_datetime=worker_to_datetime,
         )
 
@@ -86,15 +86,16 @@ class AlpacaNewsBatchSource(StatelessSource):
 
         if news is None or len(news) == 0:
             raise StopIteration()
-        
+
         return news
-    
+
     def close(self):
         """
         Closes the batch source.
         """
-        
+
         pass
+
 
 def build_alpaca_client(
     from_datetime: datetime.datetime,
@@ -115,7 +116,7 @@ def build_alpaca_client(
 
     Raises:
         KeyError: If api_key or api_secret is not provided and is not found in the environment variables.
-    
+
     Returns:
         AlpacaNewsBatchClient: The AlpacaNewsBatchClient object.
     """
@@ -125,17 +126,17 @@ def build_alpaca_client(
             api_key = os.environ["ALPACA_API_KEY"]
         except KeyError:
             raise KeyError(
-            "ALPACA_API_KEY must be set as environment variable or manually passed as an argument."
+                "ALPACA_API_KEY must be set as environment variable or manually passed as an argument."
             )
 
     if api_secret is None:
         try:
             api_secret = os.environ["ALPACA_API_SECRET"]
-        except KeyError: 
+        except KeyError:
             raise KeyError(
-            "ALPACA_API_SECRET must be set as environment variable or manually passed as an argument."
+                "ALPACA_API_SECRET must be set as environment variable or manually passed as an argument."
             )
-    
+
     if tickers is None:
         tickers = ["*"]
 
@@ -166,7 +167,7 @@ class AlpacaNewsBatchClient:
     NEWS_URL = "https://data.alpaca.markets/v1beta1/news"
 
     def __init__(
-        self, 
+        self,
         from_datetime: datetime.datetime,
         to_datetime: datetime.datetime,
         api_key: str,
@@ -203,7 +204,7 @@ class AlpacaNewsBatchClient:
         """
 
         return self._first_request or self._page_token is not None
-    
+
     def list(self):
         """
         Convenience function to fetch a batch of news from Alpaca API.
@@ -214,7 +215,7 @@ class AlpacaNewsBatchClient:
 
         if not self.try_request:
             return None
-        
+
         self._first_request = False
 
         # prepare the request URL
@@ -248,7 +249,7 @@ class AlpacaNewsBatchClient:
 
         else:
             logger.error("Request failed with status code:", response.status_code)
-        
+
         self._page_token = next_page_token
 
         return news_json["news"]

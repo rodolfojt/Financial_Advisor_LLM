@@ -29,7 +29,7 @@ def split_time_range_into_intervals(
         from_datetime (datetime): The starting datetime object.
         to_datetime (datetime): The ending datetime object.
         n (int): The number of intervals.
-    
+
     Returns:
         List of tuples: A list where each tuple contains the start and end 
         datetime objects for each interval.
@@ -38,7 +38,7 @@ def split_time_range_into_intervals(
     # Calculate total duration between from_datetime and to_datetime.
     total_duration = to_datetime - from_datetime
 
-    # Calculte the length of each interval.
+    # Calculate the length of each interval.
     interval_length = total_duration / n
 
     # Generate the interval.

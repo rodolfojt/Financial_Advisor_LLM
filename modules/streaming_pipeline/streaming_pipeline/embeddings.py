@@ -1,4 +1,4 @@
-import logging 
+import logging
 import traceback
 from pathlib import Path
 from typing import Optional, Union
@@ -78,7 +78,7 @@ class EmbeddingModelSingleton(metaclass=SingletonMeta):
         """
 
         return self._tokenizer
-    
+
     def __call__(
         self, input_text: str, to_list: bool = True
     ) -> Union[np.ndarray, list]:
@@ -104,9 +104,9 @@ class EmbeddingModelSingleton(metaclass=SingletonMeta):
         except Exception:
             logger.error(traceback.format_exc())
             logger.error(f"Error tokenizing the following input text: {input_text}")
-            
+
             return [] if to_list else np.array([])
-        
+
         try:
             result = self._model(**tokenized_text)
         except Exception:
@@ -114,7 +114,7 @@ class EmbeddingModelSingleton(metaclass=SingletonMeta):
             logger.error(
                 f"Error generating embeddings for the following model_id: {self._model_id} and input text: {input_text}"
             )
-            
+
             return [] if to_list else np.array([])
 
         embeddings = result.last_hidden_state[:, 0, :].cpu().detach().numpy()

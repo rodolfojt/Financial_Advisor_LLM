@@ -15,7 +15,7 @@ class QdrantVectorOutput(DynamicOutput):
     A class representing a Qdrant vector output.
 
     This class is used to create a Qdrant vector output, which is a type of dynamic output that supports
-    at-least-once processing. Messagens from the resume epoch will be duplicated right after resume.
+    at-least-once processing. Messages from the resume epoch will be duplicated right after resume.
 
     Args:
         vector_size (int): The size of the vector.
@@ -37,17 +37,17 @@ class QdrantVectorOutput(DynamicOutput):
             self.client = client
         else:
             self.client = build_qdrant_client()
-        
+
         try:
             self.client.get_collection(collection_name=self._collection_name)
-        except:
+        except (UnexpectedResponse, ValueError):
             self.client.recreate_collection(
                 collection_name=self._collection_name,
                 vectors_config=VectorParams(
                     size=self._vector_size, distance=Distance.COSINE
                 ),
             )
-    
+
     def build(self, worker_index, worker_count):
         """
         Builds a QdrantVectorSink object.
@@ -61,24 +61,24 @@ class QdrantVectorOutput(DynamicOutput):
         """
 
         return QdrantVectorSink(self.client, self._collection_name)
-        
+
 
 def build_qdrant_client(url: Optional[str] = None, api_key: Optional[str] = None):
     """
-    Build a QdrantClient object with the given URL and API key.
+    Builds a QdrantClient object with the given URL and API key.
 
     Args:
         url (Optional[str]): The URL of the Qdrant server. If not provided,
             it will be read from the QDRANT_URL environment variable.
         api_key (Optional[str]): The API key to use for authentication. If not provided,
-        it will be read from the QDRANT_API_KEY environment variable.
+            it will be read from the QDRANT_API_KEY environment variable.
 
     Raises:
         KeyError: If the QDRANT_URL or QDRANT_API_KEY environment variables are not set
             and no values are provided as arguments.
-    
+
     Returns:
-        QdrantClient: A QdarantClient object connected to the specified Qdrant server.
+        QdrantClient: A QdrantClient object connected to the specified Qdrant server.
     """
 
     if url is None:
@@ -88,22 +88,23 @@ def build_qdrant_client(url: Optional[str] = None, api_key: Optional[str] = None
             raise KeyError(
                 "QDRANT_URL must be set as environment variable or manually passed as an argument."
             )
-    
+
     if api_key is None:
         try:
             api_key = os.environ["QDRANT_API_KEY"]
-        except:
+        except KeyError:
             raise KeyError(
                 "QDRANT_API_KEY must be set as environment variable or manually passed as an argument."
             )
-    
+
     client = QdrantClient(url, api_key=api_key)
 
     return client
 
+
 class QdrantVectorSink(StatelessSink):
     """
-    A sink that writes documents embeddings to a Qdrant collection.
+    A sink that writes document embeddings to a Qdrant collection.
 
     Args:
         client (QdrantClient): The Qdrant client to use for writing.
@@ -112,7 +113,7 @@ class QdrantVectorSink(StatelessSink):
     """
 
     def __init__(
-        self, 
+        self,
         client: QdrantClient,
         collection_name: str = constants.VECTOR_DB_OUTPUT_COLLECTION_NAME,
     ):
