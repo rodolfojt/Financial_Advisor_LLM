@@ -10,9 +10,9 @@ from qdrant_client.models import PointStruct
 from streaming_pipeline import constants
 from streaming_pipeline.models import Document
 
+
 class QdrantVectorOutput(DynamicOutput):
-    """
-    A class representing a Qdrant vector output.
+    """A class representing a Qdrant vector output.
 
     This class is used to create a Qdrant vector output, which is a type of dynamic output that supports
     at-least-once processing. Messages from the resume epoch will be duplicated right after resume.
@@ -49,8 +49,7 @@ class QdrantVectorOutput(DynamicOutput):
             )
 
     def build(self, worker_index, worker_count):
-        """
-        Builds a QdrantVectorSink object.
+        """Builds a QdrantVectorSink object.
 
         Args:
             worker_index (int): The index of the worker.
@@ -98,7 +97,6 @@ def build_qdrant_client(url: Optional[str] = None, api_key: Optional[str] = None
             )
 
     client = QdrantClient(url, api_key=api_key)
-
     return client
 
 

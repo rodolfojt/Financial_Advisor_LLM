@@ -40,7 +40,7 @@ def build(
 
     model = EmbeddingModelSingleton(cache_dir=model_cache_dir)
     is_input_mocked = debug is True and is_batch is False
-
+    
     flow = Dataflow()
     flow.input(
         "input",
