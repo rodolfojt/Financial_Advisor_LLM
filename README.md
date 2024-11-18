@@ -2,7 +2,7 @@
 
 Chatbot built as Financial Advisor using 3-pipeline architecture. My focus on this project is to put into practice some important concepts in the Generative AI field, drawing from the Hands-On LLMs free course. By following this course, I've delved into various key areas such as:
 
-- Deployment of a Large Language Model (LLMs).
+- Deployment of a Large Language Model (LLM).
 - Designing and building a Retrieval-Augmented Generation (RAG) system.
 - Implementing LLMOps in practice to ensure efficient management and deployment of LLM-based models.
 - Establishing my first Vector Database (DB), a crucial component for efficient data storage and retrieval.
